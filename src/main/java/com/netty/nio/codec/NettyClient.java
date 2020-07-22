@@ -3,10 +3,12 @@ package com.netty.nio.codec;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.protobuf.ProtobufEncoder;
 
 /**
  * NettyClient Class
@@ -29,7 +31,10 @@ public class NettyClient {
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
-                            socketChannel.pipeline().addLast(new NettyClientHandler());//加入自己的处理器
+                            ChannelPipeline pipeline=socketChannel.pipeline();
+                            //在pipeline中加入ProtoBufEncoder
+                            pipeline.addLast("encoder",new ProtobufEncoder());
+                            pipeline.addLast(new NettyClientHandler());//加入自己的处理器
                         }
                     });
             System.err.println("客户端 is ok");
